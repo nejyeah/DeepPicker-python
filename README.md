@@ -36,7 +36,7 @@ After finished, the trained model will be saved in **'../trained_model/Model_dem
 
 ### 2.2 Train Type2
 Before training a model based on different molecules, you should extract the positive samples and negative samples from different molecule into a binary file through script `extractData.py`.
-### 2.2.1 extract particles into numpy binary file
+#### 2.2.1 extract particles into numpy binary file
 Options for extracting the positive and negative samples into a file:
 
     --inputDir, string, specify the directory of micrograph files
@@ -53,7 +53,7 @@ run the script `extractData.py`:
 After finished, the particles of molecule trpv1 are stored in file **'../extracted_data/trpv1.pickle'**.
 Run this script to extract all the training samples into file.
 
-### 2.2.2 training
+#### 2.2.2 training
 Options for cross-molecule training:
 
     --train_type, 2, specify the training type
@@ -69,9 +69,9 @@ run the script `train.py`:
 
 After finished, the trained model will be saved in **'../trained_model/Model_demo'**.  The model was trained by 3 different molecules, each contributes 3333 positive training samples.  
 
-## 2.3 Train Type 3
+### 2.3 Train Type 3
 
-## 2.4 Train Type 4
+### 2.4 Train Type 4
 Options for training directly from micrographs directory:
 
     --train_type, 4, specify the training type
