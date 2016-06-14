@@ -8,13 +8,26 @@ import time
 import os
 import re
 import pickle
-
 import numpy as np
+from optparse import OptionParser
 import tensorflow as tf
+
 from deepModel import DeepModel
 from autoPicker import AutoPicker
 
 def pick_particle():
+    # define the options
+    parser = OptionParser()
+    parser.add_option("--inputDir", dest="inputDir", help="Input directory", metavar="DIRECTORY")
+    parser.add_option("--pre_trained_model", dest="pre_trained_model", help="Input the pre-trained model", metavar="FILE")
+    parser.add_option("--mrc_number", dest="mrc_number", help="Number of mrc files to be picked.", metavar="VALUE", default=-1)
+    parser.add_option("--particle_size", dest="particle_size", help="the size of the particle.", metavar="VALUE", default=-1)
+    parser.add_option("--outputDir", dest="outputDir", help="Output directory, the coordinates file will be saved here.", metavar="DIRECTORY")
+    parser.add_option("--coordinate_symbol", dest="coordinate_symbol", help="The symbol of the saveed coordinate file, like '_cnnPick'", metavar="STRING")
+    parser.add_option("--threshold", dest="threshold", help="Pick the particles, the prediction value is larger than the threshold..", metavar="VALUE", default=0.5)
+    (opt, args) = parser.parse_args()
+
+    # set the random seed for numpy and tensorflow
     tf.set_random_seed(1234)
     np.random.seed(1234)
     
@@ -25,12 +38,12 @@ def pick_particle():
 
     particle_size = 180
 
-    pre_trained_model = '../trained_model/Model_demo'
-    input_dir = '/media/bioserver1/Data/paper_test/trpv1/test/lowpass'
-    output_dir = '../autopick-trpv1-by-demo'
-    threshold = 0.5
-    coordinate_symbol = '_cnnPick'
-    mrc_number = 100
+    pre_trained_model = opt.pre_trained_model
+    input_dir = opt.inputDir
+    output_dir = opt.outputDir
+    threshold = float(opt.threshold)
+    coordinate_symbol = opt.coordinate_symbol
+    mrc_number = int(opt.mrc_number)
 
     if not os.path.isfile(pre_trained_model):
         print("ERROR:%s is not a valid file."%(pre_trained_model))
@@ -53,6 +66,7 @@ def pick_particle():
             filename = os.path.join(input_dir, f)
             mrc_file_all.append(filename)
     
+    mrc_file_all.sort()
     if mrc_number<=0:
         mrc_number = len(mrc_file_all)
     
@@ -80,4 +94,5 @@ def pick_particle():
 def main(argv=None):
     pick_particle()
 if __name__ == '__main__':
-    tf.app.run()
+    #tf.app.run()
+    main()

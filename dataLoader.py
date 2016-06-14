@@ -121,7 +121,7 @@ class DataLoader(object):
     def preprocess_particle_online(particle_batch):
         """Do process to the particle batch before they are inputed to the CNN model.
 
-        This is online process during the training process. The process mainly include random rotation.
+        This is online process during the training process. This process mainly includes random rotation.
         
         Args:
             particle_batch: numpy.array, the shape is (batch_size, particle_col, particle_row, channel)
@@ -213,6 +213,9 @@ class DataLoader(object):
         n_columns = header[0]
         n_rows = header[1]
         mode = header[3]
+        #print "n_columns:",n_columns
+        #print "n_rows:",n_rows
+        #print "mode:",mode
         if mode == 0:
             # signed 8-bit bytes range -128 to 127
             pass
@@ -295,7 +298,7 @@ class DataLoader(object):
             header, body = DataLoader.readMrcFile(key)
             n_col = header[0]
             n_row = header[1]
-            body_2d = np.array(body, dtype=float32).reshape(n_col, n_row, 1)
+            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
 
             # show the micrograph with manually picked particles
             # plot the circle of the particle 
@@ -369,7 +372,7 @@ class DataLoader(object):
 
 
     @staticmethod
-    def load_trainData_From_RelionStarFile(starFileName, particle_size, model_input_size, validation_ratio, debug_dir):    
+    def load_trainData_From_RelionStarFile(starFileName, particle_size, model_input_size, validation_ratio):    
         """read train_data and validation data from star file
 
         In order to train a CNN model based on Relion particle '.star' file, it need to loading the training particles
@@ -393,14 +396,6 @@ class DataLoader(object):
             None 
         """
         particle_array_positive, particle_array_negative = DataLoader.load_Particle_From_starFile(starFileName, particle_size, model_input_size)
-        """
-        filename1 = debug_dir/positive_particle.png 
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        plt.gray()
-        plt.imshow(particle_array_positive[0:10,...].reshape((10*particle_size, particle_size)))
-        plt.savefig('particle.png')
-        """
         np.random.shuffle(particle_array_positive)	
         np.random.shuffle(particle_array_negative)	
 
@@ -479,7 +474,7 @@ class DataLoader(object):
             header, body = DataLoader.readMrcFile(mrc_file_coordinate[i])
             n_col = header[0]
             n_row = header[1]
-            body_2d = np.array(body, dtype=float32).reshape(n_col, n_row, 1)
+            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
             # read star coordinate
             coordinate = DataLoader.read_coordinate_from_star(file_coordinate[i])
             # show the micrograph with manually picked particles
@@ -543,13 +538,12 @@ class DataLoader(object):
                             particle_array_negative.append(patch)
                             break
         if produce_negative:
-	    particle_array_positive = np.array(particle_array_positive).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
-	    particle_array_negative = np.array(particle_array_negative).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
-   	    return particle_array_positive, particle_array_negative 
-
+            particle_array_positive = np.array(particle_array_positive).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)
+            particle_array_negative = np.array(particle_array_negative).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
+            return particle_array_positive, particle_array_negative 
         else:
-	    particle_array_positive = np.array(particle_array_positive).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
-   	    return particle_array_positive
+            particle_array_positive = np.array(particle_array_positive).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
+            return particle_array_positive
               
     # read input data from star format file
     @staticmethod
@@ -661,7 +655,7 @@ class DataLoader(object):
             header, body = DataLoader.readMrcFile(mrc_file_coordinate[i])
             n_col = header[0]
             n_row = header[1]
-            body_2d = np.array(body, dtype=float32).reshape(n_col, n_row, 1)
+            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
             # read star coordinate
             coordinate = DataLoader.read_coordinate_from_star(file_coordinate[i])
             # show the micrograph with manually picked particles
@@ -765,8 +759,8 @@ class DataLoader(object):
                 particle_array_negative.append(patch_negative)
              
         number_total_particle = len(particle_array_positive)
-	particle_array_positive = np.array(particle_array_positive).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
-	particle_array_negative = np.array(particle_array_negative).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
+        particle_array_positive = np.array(particle_array_positive).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
+        particle_array_negative = np.array(particle_array_negative).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)	
         np.random.shuffle(particle_array_positive)	
         np.random.shuffle(particle_array_negative)	
 

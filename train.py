@@ -9,9 +9,11 @@ import time
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
+from optparse import OptionParser
 
 from deepModel import DeepModel
 from dataLoader import DataLoader
+import display
 
 def shuffle_in_unison_inplace(a, b):
     assert len(a) == len(b)
@@ -19,10 +21,25 @@ def shuffle_in_unison_inplace(a, b):
     return a[p], b[p]
 
 def error_rate(prediction, label):
-  """Return the error rate based on dense predictions and sparse labels."""
-  return 100.0 - (100.0 * np.sum(np.argmax(prediction, 1) == label) / prediction.shape[0])
+    """Return the error rate based on dense predictions and sparse labels."""
+    return 100.0 - (100.0 * np.sum(np.argmax(prediction, 1) == label) / prediction.shape[0])
 
 def train():
+    parser = OptionParser()
+    parser.add_option("--train_inputDir", dest="train_inputDir", help="Input directory", metavar="DIRECTORY")
+    parser.add_option("--train_inputFile", dest="train_inputFile", help="Input file", metavar="FILE")
+    parser.add_option("--train_type", dest="train_type", help="Training type, 1|2|3|4.", metavar="VALUE", default=2)
+    parser.add_option("--particle_number", dest="train_number", help="Number of positive samples to train.", metavar="VALUE", default=-1)
+    parser.add_option("--mrc_number", dest="mrc_number", help="Number of mrc files to be trained.", metavar="VALUE", default=-1)
+    parser.add_option("--coordinate_symbol", dest="coordinate_symbol", help="The symbol of the coordinate file, like '_manualPick'", metavar="STRING")
+    parser.add_option("--particle_size", dest="particle_size", help="the size of the particle.", metavar="VALUE", default=-1)
+    parser.add_option("--validation_ratio", dest="validation_ratio", help="the ratio.", metavar="VALUE", default=0.1)
+    parser.add_option("--model_retrain", action="store_true", dest="model_retrain", help="train the model using the pre-trained model as parameters initialization .", default=False)
+    parser.add_option("--model_load_file", dest="model_load_file", help="pre-trained model", metavar="FILE")
+    parser.add_option("--model_save_dir", dest="model_save_dir", help="save the model to this directory", metavar="DIRECTORY", default="../trained_model")
+    parser.add_option("--model_save_file", dest="model_save_file", help="save the model to file", metavar="FILE")
+    (opt, args) = parser.parse_args()
+ 
     # set the tensoflow seed
     tf.set_random_seed(1234)
     # set the numpy seed
@@ -34,30 +51,30 @@ def train():
     batch_size = model_input_size[0]
 
     # define input parameters
-    trainType = 4
-    train_inputDir = "/media/bioserver1/Data/paper_test/gammas/train/lowpass" 
-    train_inputFile = "trpv1_lowpass10A.pickle"
-    train_number = -1 
-    mrc_number = 10
-    coordinate_symbol = '_manual_checked'
+    train_type = int(opt.train_type)
+    train_inputDir = opt.train_inputDir
+    train_inputFile = opt.train_inputFile
+    train_number = int(opt.train_number) 
+    mrc_number = int(opt.mrc_number)
+    coordinate_symbol = opt.coordinate_symbol
     debug_dir = '../train_output'   # output dir
-    particle_size = 180
-    validation_rate = 0.1   
+    particle_size = int(opt.particle_size)
+    validation_ratio = float(opt.validation_ratio)   
 
     # define the save model
-    model_retrain = False
-    model_load_file = "../trained_model/cnn_demoModel"
-    model_save_Dir = '../trained_model'
-    model_save_file = model_save_Dir+'/Model_trpv1_l10_10000'
+    model_retrain = opt.model_retrain
+    model_load_file = opt.model_load_file
+    model_save_dir = opt.model_save_dir
+    model_save_file = os.path.join(model_save_dir, opt.model_save_file)
 
-    if not os.access(model_save_Dir, os.F_OK):
-        os.mkdir(model_save_Dir)
+    if not os.access(model_save_dir, os.F_OK):
+        os.mkdir(model_save_dir)
     if not os.access(debug_dir, os.F_OK):
         os.mkdir(debug_dir)
 
     # define the learning rate decay parameters
     # more information about this, refer to function tf.train.exponential_decay()
-    learning_rate = 0.1
+    learning_rate = 0.01
     learning_rate_decay_factor = 0.95
     # the value will be changed base on the train_size and batch size
     learning_rate_decay_steps = 400
@@ -68,20 +85,21 @@ def train():
     # load training dataset
     dataLoader = DataLoader()
     # load train data from relion .star file 
-    if trainType == 1:
-        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_RelionStarFile(train_inputFile, particle_size, model_input_size, validation_rate, debug_dir)
+    if train_type == 1:
+        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_RelionStarFile(train_inputFile, particle_size, model_input_size, validation_ratio)
     # load train data from numpy data struct
-    elif trainType == 2:
-        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_ExtractedDataFile(train_inputDir, train_inputFile, model_input_size, validation_rate, train_number)
+    elif train_type == 2:
+        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_ExtractedDataFile(train_inputDir, train_inputFile, model_input_size, validation_ratio, train_number)
     # load train data from prepicked results
-    elif trainType == 3:
+    elif train_type == 3:
         pass
     # load train data from mrc file dir
-    elif trainType == 4:
-        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_mrcFileDir(train_inputDir, particle_size, model_input_size, validation_rate, coordinate_symbol, mrc_number)
+    elif train_type == 4:
+        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_mrcFileDir(train_inputDir, particle_size, model_input_size, validation_ratio, coordinate_symbol, mrc_number)
     else:
-        print("ERROR: invalid value of trainType:", trainType)    
+        print("ERROR: invalid value of train_type:", train_type)    
 
+    display.show_particle(train_data, os.path.join(debug_dir, 'positive.png'))
     # test whether train_data exist
     try: 
         train_data
@@ -151,4 +169,5 @@ def main(argv=None):
     train()
 
 if __name__ == '__main__':
-    tf.app.run()
+    #tf.app.run()
+    main()

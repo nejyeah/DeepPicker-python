@@ -177,7 +177,7 @@ class AutoPicker(object):
 
         time_cost = time.time() - time1
         print("time cost: %d s"%time_cost)
-        display.save_image(prediction, "prediction.png")
+        #display.save_image(prediction, "prediction.png")
         # get the prediction value to be a positive sample, it is a value between 0~1
         # the following code not tested
         # do a connected component analysis
