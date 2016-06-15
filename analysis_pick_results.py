@@ -1,11 +1,24 @@
 from autoPicker import AutoPicker
+from optparse import OptionParser
 
-pick_results_file = '../autopick-trpv1-by-gammas-ss-l10-10000/autopick_results.list'
-reference_mrc_file_dir = '/media/bioserver1/Data/paper_test/trpv1/test/lowpass'
-reference_coordinate_symbol = '_refine_frealign'
-particle_size = 180
-minimum_distance_rate = 0.2
+def analysis_results():
+    parser = OptionParser()
+    parser.add_option("--inputFile", dest="inputFile", help="Input picking results file, like '/PATH/autopick_results.list'", metavar="FILE")
+    parser.add_option("--inputDir", dest="inputDir", help="Reference coordinate directory", metavar="DIRECTORY")
+    parser.add_option("--coordinate_symbol", dest="coordinate_symbol", help="The symbol of the coordinate file, like '_manualPick'", metavar="STRING")
+    parser.add_option("--particle_size", dest="particle_size", help="the size of the particle.", metavar="VALUE", default=-1)
+    parser.add_option("--minimum_distance_rate", dest="minimum_distance_rate", help="Use the value particle_size*minimum_distance_rate as the distance threshold for estimate the number of true positive samples, the default value is 0.2", metavar="VALUE", default=0.2)
+    (opt, args) = parser.parse_args()
 
-AutoPicker.analysis_pick_results(pick_results_file, reference_mrc_file_dir, reference_coordinate_symbol, particle_size, minimum_distance_rate)
+    pick_results_file = opt.inputFile
+    reference_mrc_file_dir = opt.inputDir
+    reference_coordinate_symbol = opt.coordinate_symbol
+    particle_size = opt.particle_size
+    minimum_distance_rate = opt.minimum_distance_rate
+    AutoPicker.analysis_pick_results(pick_results_file, reference_mrc_file_dir, reference_coordinate_symbol, particle_size, minimum_distance_rate)
 
+def main(argv=None):
+    analysis_results()
 
+if __name__ == '__main__':
+    main()

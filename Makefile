@@ -12,3 +12,5 @@ trainType2:
 
 pick:
 
+analysi:
+

@@ -1,5 +1,6 @@
 # DeepPicker
 ------- By Wang Feng 2016/06/14-------
+
 More detail about 'DeepPicker', please refer to the paper [DeepPicker](https://arxiv.org/abs/1605.01838). 
 This is the python version, the code is based on the TensorFlow. And it supports all linux platform.
 
@@ -106,3 +107,20 @@ Options:
     python autopick.py --inputDir '/media/bioserver1/Data/paper_test/trpv1/test/lowpass' --pre_trained_model '../trained_model/Model_demo' --particle_size 180 --mrc_number 100 --outputDir '../autopick-trpv1-by-demo' --coordinate_symbol '_cnnPick' --threshold 0.5
 
 After finished, the picked coordinate file will be saved in **'../autopick-trpv1-by-demo'**. The format of the coordinate file is Relion '.star'.
+Besides, a binary file called **'../autopick-trpv1-by-demo/autopick_results.list'** is produced. It contains all the particles information no matter the threshold. It will be used to compare with reference results like manually picking.
+
+## 4. Comparing the picking results with reference
+Estimate the precision and recall based on the reference results (like manually picking by experts). The script `analysis_pick_results.py` 
+
+Options:
+ 
+    --inputFile, string, specify the file of picking results, like '/PICK_PATH/autopick_results.list'  
+    --inputDir, string, specify the directory of the reference coordinate files 
+    --particle_size, int, the size of the particle
+    --coordinate_symbol, string, the symbol of the reference coordinate file, like '_manualPick'. 
+    --minimum_distance_rate, float, Use the value particle_size*minimum_distance_rat    e as the distance threshold for estimate the number of true positive samples, the default value is 0.2.
+    
+run the script `analysis_pick_results.py`:
+
+        python analysis_pick_results.py --inputFile '../autopick-trpv1-by-demo/autopick_results.list' --inputDir '/media/bioserver1/Data/paper_test/trpv1/test/lowpass' --particle_size 180 --coordinate_symbol '_manual_checked' --minimum_distance_rate 0.2
+
