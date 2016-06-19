@@ -13,8 +13,8 @@ def analysis_results():
     pick_results_file = opt.inputFile
     reference_mrc_file_dir = opt.inputDir
     reference_coordinate_symbol = opt.coordinate_symbol
-    particle_size = opt.particle_size
-    minimum_distance_rate = opt.minimum_distance_rate
+    particle_size = int(opt.particle_size)
+    minimum_distance_rate = float(opt.minimum_distance_rate)
     AutoPicker.analysis_pick_results(pick_results_file, reference_mrc_file_dir, reference_coordinate_symbol, particle_size, minimum_distance_rate)
 
 def main(argv=None):

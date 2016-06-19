@@ -88,7 +88,7 @@ def pick_particle():
         print("time cost: %.1f s"%time_cost)
 
         # write the pick all results(threshold=0) to file
-        output_file = os.path.join(output_dir, 'autopick_results.list')
+        output_file = os.path.join(output_dir, 'autopick_results.pickle')
         AutoPicker.write_pick_results(candidate_particle_all, output_file)
 
 def main(argv=None):

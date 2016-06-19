@@ -17,6 +17,7 @@ import scipy.misc
 import scipy.ndimage as ndimage
 import scipy.ndimage.filters as filters
 import matplotlib.pyplot as plt
+from operator import itemgetter, attrgetter
 
 from deepModel import DeepModel
 from dataLoader import DataLoader
@@ -74,7 +75,7 @@ class AutoPicker(object):
         array_y_x = np.array(ndimage.center_of_mass(image_2D, labeled, range(1, num_objects+1)))
         array_y_x = array_y_x.astype(int)
         list_y_x = array_y_x.tolist()
-        print("number of local maximum:%d"%len(list_y_x))
+        #print("number of local maximum:%d"%len(list_y_x))
         for i in range(len(list_y_x)):
             # add the prediction score to the list
             list_y_x[i].append(image_2D[ array_y_x[i][0] ][array_y_x[i][1] ]) 
@@ -150,6 +151,9 @@ class AutoPicker(object):
         # the size to do peak detection 
         local_window_size = int(0.6*patch_size/step_size)
 
+        #print("image_col:", body_2d.shape[0])
+        #print("particle_size:", patch_size)
+        #print("step_size:", step_size)
         map_col = int((body_2d.shape[0]-patch_size)/step_size)
         map_row = int((body_2d.shape[1]-patch_size)/step_size)
          
@@ -168,6 +172,12 @@ class AutoPicker(object):
             map_index_col = map_index_col + 1
 
         map_index_row = map_index_col-map_col+map_row
+        #print("map_col:",map_col)
+        #print("map_row:",map_row)
+        #print(len(particle_candidate_all))
+        #print("map_index_col:",map_index_col)
+        #print("map_index_row:",map_index_row)
+        #print("col*row:",map_index_col*map_index_row)
         # reshape it to fit the input format of the model
         particle_candidate_all = np.array(particle_candidate_all).reshape(num_total_patch, self.model_input_size[1], self.model_input_size[2], 1)
         # predict
@@ -309,16 +319,8 @@ class AutoPicker(object):
         precision = tp/total_pick
         recall = tp/total_reference
         print("(threshold 0.5)precision:%f recall:%f"%(precision, recall))
-        # sort the coordinate totoal by the prediction score
-        def compare_coordinate(x, y):
-            if x[2] > y[2]:
-                return -1
-            elif x[2] < y[2]:
-                return 1
-            else:
-                return 0
-    
-        coordinate_total.sort(compare_coordinate)
+        # sort the coordinate based on prediction score in a descending order.
+        coordinate_total = sorted(coordinate_total, key = itemgetter(2), reverse = True) 
         total_tp = []
         total_recall = []
         total_precision = []
@@ -385,15 +387,6 @@ class AutoPicker(object):
         tp = 0
         average_distance = 0
 
-        # define a compare function
-        def compare_coordinate(x, y):
-            if x[1] > y[1]:
-                return 1
-            elif x[1] < y[1]:
-                return -1
-            else:
-                return 0 
-
         for i in range(len(coordinate_reference)):
             coordinate_reference[i].append(0)
             coor_x = coordinate_reference[i][0]
@@ -413,7 +406,7 @@ class AutoPicker(object):
                         neighbour.append(same_n)
             if len(neighbour)>=1: 
                 if len(neighbour)>1:
-                    neighbour.sort(compare_coordinate)
+                    neighbour = sorted(neighbour, key = itemgetter(1))
                 index = neighbour[0][0]
                 # change the symbol to 1, means it matchs with a reference coordinate
                 coordinate_pick[index][4] = 1

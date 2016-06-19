@@ -54,7 +54,7 @@ def train():
     train_type = int(opt.train_type)
     train_inputDir = opt.train_inputDir
     train_inputFile = opt.train_inputFile
-    train_number = int(opt.train_number) 
+    train_number = float(opt.train_number) 
     mrc_number = int(opt.mrc_number)
     coordinate_symbol = opt.coordinate_symbol
     debug_dir = '../train_output'   # output dir
@@ -84,18 +84,21 @@ def train():
 
     # load training dataset
     dataLoader = DataLoader()
-    # load train data from relion .star file 
     if train_type == 1:
-        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_RelionStarFile(train_inputFile, particle_size, model_input_size, validation_ratio)
-    # load train data from numpy data struct
+        # load train data from mrc file dir
+        train_number = int(train_number)
+        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_mrcFileDir(train_inputDir, particle_size, model_input_size, validation_ratio, coordinate_symbol, mrc_number, train_number)
     elif train_type == 2:
+        # load train data from numpy data struct
+        train_number = int(train_number)
         train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_ExtractedDataFile(train_inputDir, train_inputFile, model_input_size, validation_ratio, train_number)
-    # load train data from prepicked results
     elif train_type == 3:
-        pass
-    # load train data from mrc file dir
+        # load train data from relion .star file 
+        train_number = int(train_number)
+        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_RelionStarFile(train_inputFile, particle_size, model_input_size, validation_ratio, train_number)
     elif train_type == 4:
-        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_mrcFileDir(train_inputDir, particle_size, model_input_size, validation_ratio, coordinate_symbol, mrc_number)
+        # load train data from prepicked results
+        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_PrePickedResults(train_inputDir, train_inputFile, particle_size, model_input_size, validation_ratio, train_number)
     else:
         print("ERROR: invalid value of train_type:", train_type)    
 

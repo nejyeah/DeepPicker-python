@@ -22,6 +22,10 @@ def extractData():
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
 
+    if particle_size == -1:
+        print("particle size should be a positive value!")
+        return 
+
     output_filename = os.path.join(output_dir, output_filename)
     DataLoader.extractData(inputDir, particle_size, coordinate_symbol, mrc_number, output_filename)
 

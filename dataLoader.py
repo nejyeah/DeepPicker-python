@@ -11,9 +11,10 @@ import scipy.misc
 import scipy.ndimage
 import tensorflow as tf
 import random
+from operator import itemgetter, attrgetter
+
 import display 
 import mrc
-
 from starReader import starRead
 
 class DataLoader(object):
@@ -98,7 +99,7 @@ class DataLoader(object):
             during the training process and picking process.
         
         Args:
-            particle: numpy.array, the shape is (num, particle_col, particle_row)
+            particle: numpy.array, the shape is (particle_col, particle_row)
             model_input_size: a list with length 4. The size is to fit with the model input.
                               model_input_size[0] stands for the batchsize.
                               model_input_size[1] stands for the input col.
@@ -372,7 +373,7 @@ class DataLoader(object):
 
 
     @staticmethod
-    def load_trainData_From_RelionStarFile(starFileName, particle_size, model_input_size, validation_ratio):    
+    def load_trainData_From_RelionStarFile(starFileName, particle_size, model_input_size, validation_ratio, train_number):    
         """read train_data and validation data from star file
 
         In order to train a CNN model based on Relion particle '.star' file, it need to loading the training particles
@@ -396,6 +397,10 @@ class DataLoader(object):
             None 
         """
         particle_array_positive, particle_array_negative = DataLoader.load_Particle_From_starFile(starFileName, particle_size, model_input_size)
+        if train_number<len(particle_array_positive):
+            particle_array_positive = particle_array_positive[:train_number, ...]
+            particle_array_negative = particle_array_negative[:train_number, ...]
+
         np.random.shuffle(particle_array_positive)	
         np.random.shuffle(particle_array_negative)	
 
@@ -464,6 +469,9 @@ class DataLoader(object):
         # read mrc file 
         if mrc_number<=0:
             mrc_number = len(mrc_file_coordinate)
+        else:
+            if mrc_number>len(mrc_file_coordinate):
+                mrc_number = len(mrc_file_coordinate)
         
         particle_array_positive = []
         particle_array_negative = []
@@ -547,7 +555,7 @@ class DataLoader(object):
               
     # read input data from star format file
     @staticmethod
-    def load_trainData_From_mrcFileDir(trainInputDir, particle_size, model_input_size, validation_ratio, coordinate_symbol, mrc_number):    
+    def load_trainData_From_mrcFileDir(trainInputDir, particle_size, model_input_size, validation_ratio, coordinate_symbol, mrc_number, train_number):    
         """read train_data and validation data from a directory of mrc files 
 
         Train a CNN model based on mrc files and corresponding coordinates.
@@ -560,6 +568,7 @@ class DataLoader(object):
                              This is the ratio of validation dataset compared to the total samples.
             coordinate_symbol: symbol of the coordinate file like '_manual'.
             mrc_number: number of mrc files to be used.
+            train_number: number of positive particles to be used for training.
 
         Returns:
             return train_data,train_labels,validation_data,validation_labels
@@ -572,6 +581,10 @@ class DataLoader(object):
             None 
         """
         particle_array_positive, particle_array_negative = DataLoader.load_Particle_From_mrcFileDir(trainInputDir, particle_size, model_input_size, coordinate_symbol, mrc_number)
+        if train_number<len(particle_array_positive):
+            particle_array_positive = particle_array_positive[:train_number, ...]
+            particle_array_negative = particle_array_negative[:train_number, ...]
+
         np.random.shuffle(particle_array_positive)	
         np.random.shuffle(particle_array_negative)	
 
@@ -693,6 +706,7 @@ class DataLoader(object):
             # extract the positive particles
             # store the particles in a contacted array: particle_array_positive	
             for i in range(number_particle):
+                
                 coordinate_x = coordinate[i][0]
                 coordinate_y = coordinate[i][1]
                 patch = np.copy(body_2d[(coordinate_y-radius):(coordinate_y+radius), (coordinate_x-radius):(coordinate_x+radius)])
@@ -733,6 +747,27 @@ class DataLoader(object):
 
     @staticmethod
     def load_trainData_From_ExtractedDataFile(train_inputDir, train_inputFile, model_input_size, validation_ratio, train_number):
+        """read train_data and validation data from pre-extracted particles.
+
+        Train a CNN model based on pre-extracted samples. This is the cross-molecule training strategy, through which you can get a more robust CNN model to achieve better fully automated picking results.
+  
+        Args:
+            trainInputDir: the directory of the extarcted data.
+            train_inputFile: the input extarcted data file, like 'gammas.pickle;trpv1.pickle', the separator must be ';'.
+            model_input_size: the size of Placeholder to fit the model input, like [100, 64, 64, 1]
+            validation_rate: divide the total samples into training dataset and validation dataset. 
+                             This is the ratio of validation dataset compared to the total samples.
+            train_number: the number of the total positive samples. If the number is set to 10000, and there are two kinds of molecule, then each one contributes only 5,000 positive samples.  
+        Returns:
+            return train_data,train_labels,validation_data,validation_labels
+            train_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            train_labels: numpy.array, int64, the shape is (number_samples)  
+            validation_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            validation_labels: numpy.array, int64, the shape is (number_samples)  
+   
+        Raises:
+            None 
+        """
         input_file_list = train_inputFile.split(";")
         # define the training number of each molecule
         if train_number<=0:
@@ -750,7 +785,10 @@ class DataLoader(object):
             if number_each_molecule <=0:
                 number_particle = len(coordinate[0])
             else:
-                number_particle = number_each_molecule
+                if number_each_molecule > len(coordinate[0]):
+                    number_particle = len(coordinate[0])
+                else:
+                    number_particle = number_each_molecule
             
             for j in range(number_particle):
                 patch_positive = DataLoader.preprocess_particle(coordinate[0][j], model_input_size)
@@ -778,3 +816,169 @@ class DataLoader(object):
         print validation_data.shape, validation_data.dtype
         print validation_labels.shape, validation_labels.dtype
         return train_data, train_labels, validation_data, validation_labels
+
+    @staticmethod
+    def load_trainData_From_PrePickedResults(train_inputDir, train_inputFile, particle_size, model_input_size, validation_ratio, train_number):
+        """read train_data and validation data from pre-picked results
+
+        Train a CNN model based on pre-picked particles. Then you can pick the particles again based on the new trained model.
+        This will improve the precision and recall of picking results.
+  
+        Args:
+            trainInputDir: the directory of mrc files
+            trainInputFile: the file of the pre-picked results, like '/Your_pick_path/autopick_results.pickle'
+            particle_size: particle size
+            model_input_size: the size of Placeholder to fit the model input, like [100, 64, 64, 1]
+            validation_rate: divide the total samples into training dataset and validation dataset. 
+                             This is the ratio of validation dataset compared to the total samples.
+            train_number: if the value is ranging (0,1), then it means the prediction threshold. If the value is ranging (1,100), then it means the proportion of top sorted ranking particles. If the value is larger than 100, then it means the number of top sorted ranking particles.
+
+        Returns:
+            return train_data,train_labels,validation_data,validation_labels
+            train_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            train_labels: numpy.array, int64, the shape is (number_samples)  
+            validation_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            validation_labels: numpy.array, int64, the shape is (number_samples)  
+   
+        Raises:
+            None 
+        """
+        with open(train_inputFile, 'rb') as f:
+            coordinate = pickle.load(f)
+            """
+            coordinate: a list, the length of it stands for the number of picked micrograph file.
+                        Each element is a list too, which contains all coordinates from the same micrograph. 
+                        The length of the list stands for the number of the particles.
+                        And each element in the list is a small list of length of 4.
+                        The first element in the small list is the coordinate x-aixs. 
+                        The second element in the small list is the coordinate y-aixs. 
+                        The third element in the small list is the prediction score. 
+                        The fourth element in the small list is the micrograh name. 
+            """
+        # sort all particles based on the prediction score
+        # get the top ranked particles
+        if train_number>1:
+            train_number = int(train_number)
+            particles_all = []
+            for i in range(len(coordinate)):
+                for j in range(len(coordinate[i])):
+                    particles_all.append(coordinate[i][j])
+            
+            # sort all particles based on prediction score in descending order
+            particles_all = sorted(particles_all, key=itemgetter(2), reverse=True)
+            if train_number < 100 :
+                number_positive_samples = len(particles_all)*train_number/100
+            else:
+                number_positive_samples = train_number
+             
+            print ("number_positive_samples:",number_positive_samples)
+            particles_train = particles_all[:number_positive_samples]
+             
+            # recover 'particles_train' to the formate like 'coordinate'
+            particles_train = sorted(particles_train, key=itemgetter(3)) 
+            mrc_filename = particles_train[0][3]
+            coordinate = []
+            mrc_coordinate = []
+            for i in range(len(particles_train)):
+                if particles_train[i][3]==mrc_filename:
+                    mrc_coordinate.append(particles_train[i])
+                else:
+                    coordinate.append(mrc_coordinate)
+                    mrc_coordinate = []
+                    mrc_filename = particles_train[i][3]
+                    mrc_coordinate.append(particles_train[i])
+                if i==len(particles_train)-1:
+                    coordinate.append(mrc_coordinate)
+
+        # read mrc data
+        particle_array_positive = []
+        particle_array_negative = []
+        number_total_particle = 0
+        negative_distance_ratio = 0.5
+        for i in range(len(coordinate)):
+            mrc_filename = coordinate[i][0][3]
+            #print(mrc_filename)
+            mrc_filename = os.path.basename(mrc_filename)
+            mrc_filename = os.path.join(train_inputDir, mrc_filename)
+            print(mrc_filename)
+            header,body = DataLoader.readMrcFile(mrc_filename)
+            n_col = header[0]
+            n_row = header[1]
+            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
+
+            # show the micrograph with manually picked particles
+            # plot the circle of the particle 
+            #display.plot_circle_in_micrograph(body_2d, coordinate[key], particle_size, 'test.png') 
+            # do preprocess to the micrograph
+            body_2d, bin_size = DataLoader.preprocess_micrograph(body_2d)
+            # bin scale the particle size and the coordinates
+            particle_size_bin =int(particle_size/bin_size)
+            radius = int(particle_size_bin/2)
+            n_col = int(n_col/bin_size)
+            n_row = int(n_row/bin_size)
+            for j in range(len(coordinate[i])):
+                coordinate[i][j][0] = int(coordinate[i][j][0]/bin_size)
+                coordinate[i][j][1] = int(coordinate[i][j][1]/bin_size)
+
+            if train_number>0 and train_number<1:
+                coordinate_positive = []
+                for j in range(len(coordinate[i])):
+                    if coordinate[i][j][2]>train_number:
+                        coordinate_positive.append(coordinate[i][j])
+            else:
+                coordinate_positive = coordinate[i]
+
+            # number of positive particles      
+            number_particle = len(coordinate_positive)
+            number_total_particle = number_total_particle + number_particle
+            print 'number of particles:',number_particle
+
+            # extract the positive particles
+            # store the particles in a contacted array: particle_array_positive 
+            for j in range(number_particle):
+                coordinate_x = coordinate_positive[j][0]
+                coordinate_y = coordinate_positive[j][1]
+                patch = np.copy(body_2d[(coordinate_y-radius):(coordinate_y+radius), (coordinate_x-radius):(coordinate_x+radius)])
+                patch = DataLoader.preprocess_particle(patch, model_input_size)
+                particle_array_positive.append(patch)
+            # extract the negative particles
+            # store the particles in a concated array: particle_array_negative  
+            for i in range(number_particle):
+                while True:
+                    isLegal = True
+                    coor_x = np.random.randint(radius, n_row-radius)
+                    coor_y = np.random.randint(radius, n_col-radius)
+                    for j in range(number_particle):
+                        coordinate_x = coordinate_positive[j][0]
+                        coordinate_y = coordinate_positive[j][1]
+                        distance = ((coor_x-coordinate_x)**2+(coor_y-coordinate_y)**2)**0.5
+                        if distance < negative_distance_ratio*particle_size_bin:
+                            isLegal = False
+                            break
+                    if isLegal:
+                        patch = np.copy(body_2d[(coor_y-radius):(coor_y+radius), (coor_x-radius):(coor_x+radius)])
+                        patch = DataLoader.preprocess_particle(patch, model_input_size)
+                        particle_array_negative.append(patch)
+                        break
+        
+        # reshape all the positive samples and negative samples    
+        particle_array_positive = np.array(particle_array_positive).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)
+        particle_array_negative = np.array(particle_array_negative).reshape(number_total_particle, model_input_size[1], model_input_size[2], 1)
+        np.random.shuffle(particle_array_positive)	
+        np.random.shuffle(particle_array_negative)	
+
+        validation_size = int(validation_ratio*particle_array_positive.shape[0])
+        train_size = particle_array_positive.shape[0] - validation_size
+        validation_data = particle_array_positive[:validation_size, ...]
+        validation_data = concatenate((validation_data, particle_array_negative[:validation_size, ...]))
+        validation_labels = concatenate((ones(validation_size, dtype=int64), zeros(validation_size, dtype=int64)))
+
+        train_data = particle_array_positive[validation_size:, ...]
+        train_data = concatenate((train_data, particle_array_negative[validation_size:, ...]))
+        train_labels = concatenate((ones(train_size, dtype=int64), zeros(train_size, dtype=int64)))
+        print train_data.shape, train_data.dtype
+        print train_labels.shape, train_labels.dtype
+        print validation_data.shape, validation_data.dtype
+        print validation_labels.shape, validation_labels.dtype
+        return train_data, train_labels, validation_data, validation_labels
+
