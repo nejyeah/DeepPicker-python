@@ -11,6 +11,7 @@ Please refer to the offical website of [Tensorflow](https://www.tensorflow.org/)
 
 ## 2. Training Model
 The main script for trainig a model is `train.py`. There are 4 ways to train a CNN model.
+
 Type 1: it is only for single-molecule and trained with a semi-automated manner. Load the training data from micrograph directory directly.
 
 Type 2: it is for multi-molecules and trained with a cross-molecule manner . Load the training data from numpy data struct files. This is the only way to train a cross-molecule model.
