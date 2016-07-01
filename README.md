@@ -4,9 +4,10 @@
 
 More details about 'DeepPicker', please refer to the paper [DeepPicker](https://arxiv.org/abs/1605.01838). 
 This is the python version based on TensorFlow. 
+It only supports Ubuntu 12.0+, centOS 7.0+, and RHEL 7.0+.
 
 ## 1. Install TensorFlow 
-Please refer to the website of [Tensorflow](https://www.tensorflow.org/) to install it. A GPU version is required. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python programs on your machine.
+Please refer to the website of [Tensorflow](https://www.tensorflow.org/) to install it. CUDA-Toolkit 7.5 is required to install the GPU version. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python programs on your machine.
 
 ## 2. Install other python packages
     
