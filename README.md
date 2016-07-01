@@ -27,7 +27,7 @@ Type 3: Load the training data from pre-picked results. It is used for iterative
 
 Type 4: Load the training data from the relion `.star` file. The `.star` should contain all the training positive samples. It can be a `classification2D.star`. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model. 
  
-All the following demo command can be found in the `Makefile`.
+All the following commands can be found in the `Makefile`.
 
 ### 3.1 Train Type 1
 Options for training model in a semi-automated manner:
