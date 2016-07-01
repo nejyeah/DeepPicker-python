@@ -21,7 +21,7 @@ Type 1: it is for single-molecule and trained with a semi-automated manner. Load
 
 Type 2: it is for multi-molecules and trained with a cross-molecule manner . Load the training data from numpy data struct files. This is the only way to train a cross-molecule model.
 
-Type 3: Load the training data from the relion `.star` file. The `.star` should contains all the training positive samples. It can be a `classification2D.star` or `classification3D.star` file. The program will extract all the particles in the `.star` file as the positive training samples to train a CNN model. 
+Type 3: Load the training data from the relion `.star` file. The `.star` should contain all the training positive samples. It can be a `classification2D.star` or `classification3D.star` file. The program will extract all the particles in the `.star` file as the positive training samples to train a CNN model. 
  
 Type 4: Load the training data from pre-picked results. It is used for iteration training. This way is very tricky.
 
