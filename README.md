@@ -1,5 +1,3 @@
-# DeepPicker
-
 ------- By Wang Feng 2016/06/14-------
 
 More details about 'DeepPicker', please refer to the paper [DeepPicker](https://arxiv.org/abs/1605.01838). 
@@ -7,7 +5,7 @@ This is the python version based on TensorFlow.
 It only supports Ubuntu 12.0+, centOS 7.0+, and RHEL 7.0+.
 
 ## 1. Install TensorFlow 
-Please refer to the website of [Tensorflow](https://www.tensorflow.org/) to install it. CUDA-Toolkit 7.5 is required to install the GPU version. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python programs on your machine.
+Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html#virtualenv-installation) to install it. CUDA-Toolkit 7.5 is required to install the GPU version. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python programs on your machine.
 
 ## 2. Install other python packages
     
@@ -23,11 +21,11 @@ Type 1: it is for single-molecule and trained with a semi-automated manner. Load
 
 Type 2: it is for multi-molecules and trained with a cross-molecule manner . Load the training data from numpy data struct files. This is the only way to train a cross-molecule model.
 
-Type 3: Load the training data from the relion `.star` file. The `.star` should contains all the training positive samples. It can be a `classification2D.star` or `classification3D.star` file. The program will extract all the particles in the `.star` file as the positive training samples to train a CNN model. It mainly aims for optimizing the picking results after optimize the sample through relion classification operation. 
+Type 3: Load the training data from the relion `.star` file. The `.star` should contains all the training positive samples. It can be a `classification2D.star` or `classification3D.star` file. The program will extract all the particles in the `.star` file as the positive training samples to train a CNN model. 
  
 Type 4: Load the training data from pre-picked results. It is used for iteration training. This way is very tricky.
 
-All the following demo running command can be found in the `Makefile`.
+All the following demo command can be found in the `Makefile`.
 
 ### 3.1 Train Type 1
 Options for training directly from micrographs directory:
@@ -130,7 +128,7 @@ Options:
  
  run the script `train.py`:
     
-    python autoPick.py --inputDir '/media/bioserver1/Data/paper_test/trpv1/test/' --pre_trained_model '../trained_model/model_demo_type2_ss_gammas' --particle_size 180 --mrc_number 20 --outputDir '../autopick-trpv1-by-demo-ss-gammas' --coordinate_symbol '_cnnPick' --threshold 0.5
+    python autoPick.py --inputDir '/media/bioserver1/Data/paper_test/trpv1/test/' --pre_trained_model '../trained_model/model_demo_type2_ss_gammas' --particle_size 180 --mrc_number 20 --outputDir '../autopick-trpv1-by-demo-ss-gammas' --coordinate_sy    mbol '_cnnPick' --threshold 0.5
 
 
 After finished, the picked coordinate file will be saved in **'../autopick-trpv1-by-demo-ss-gammas'**. The format of the coordinate file is Relion '.star'.
@@ -155,22 +153,22 @@ run the script `analysis_pick_results.py`:
 After finished, a result file `../autopick-trpv1-by-demo-ss-gammas/results.txt` will be produced. It records the precision and recall value as well as the deviation of the center.
 
 ## 6. Recommended procedure
-Step 1, do the picking job(see Section 4) based on the pre-trained demo model './trained_model/model_demo_type3', or you can train your own model(see Section 3.2).
+Step 1, do the picking job (see Section 4) based on the pre-trained demo model './trained_model/model_demo_type3' or you can train your own model (see Section 3.2).
 
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.5
 
-Step 2, do the iteration training(see Section 3.4):
+Step 2, do the iteration training (see Section 3.4):
 
     python train.py --train_type 4 --train_inputDir 'Your_mrc_file_DIR' --train_inputFile '../autopick-results-by-demo-type3/autopick_results.pickle' --particle_size Your_particle_size --particle_number 10000 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_iter1_by_type3'
     
-Step 3, do the picking job(see Section 4):
+Step 3, do the picking job (see Section 4):
 
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_iter1_by_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3-iter1' --coordinate_symbol '_cnnPick' --threshold 0.5
     
 Step 4, do the 2D classification job using Relion based on the picked coordinate file in '../autopick-results-by-demo-type3-iter1'.
 Save the good 2D average results in a '.star' file, like 'classification2D_demo.star'.
 
-Step 5, do the training job based on the 'classification2D_demo.star'(see Section 3.3)
+Step 5, do the training job based on the 'classification2D_demo.star' (see Section 3.3)
 
     python train.py --train_type 3 --train_inputFile '/Your_DIR/classification2D_demo.star' --particle_size Your_particle_size --particle_number -1 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_2D'
     
