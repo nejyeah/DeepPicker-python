@@ -130,7 +130,7 @@ Options:
  
  run the script `train.py`:
     
-    python autoPick.py --inputDir '/media/bioserver1/Data/paper_test/trpv1/test/' --pre_trained_model '../trained_model/model_demo_type2_ss_gammas' --particle_size 180 --mrc_number 20 --outputDir '../autopick-trpv1-by-demo-ss-gammas' --coordinate_sy    mbol '_cnnPick' --threshold 0.5
+    python autoPick.py --inputDir '/media/bioserver1/Data/paper_test/trpv1/test/' --pre_trained_model '../trained_model/model_demo_type2_ss_gammas' --particle_size 180 --mrc_number 20 --outputDir '../autopick-trpv1-by-demo-ss-gammas' --coordinate_symbol '_cnnPick' --threshold 0.5
 
 
 After finished, the picked coordinate file will be saved in **'../autopick-trpv1-by-demo-ss-gammas'**. The format of the coordinate file is Relion '.star'.
