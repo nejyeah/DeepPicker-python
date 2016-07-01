@@ -93,12 +93,12 @@ def train():
         train_number = int(train_number)
         train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_ExtractedDataFile(train_inputDir, train_inputFile, model_input_size, validation_ratio, train_number)
     elif train_type == 3:
+        # load train data from prepicked results
+        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_PrePickedResults(train_inputDir, train_inputFile, particle_size, model_input_size, validation_ratio, train_number)
+    elif train_type == 4:
         # load train data from relion .star file 
         train_number = int(train_number)
         train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_RelionStarFile(train_inputFile, particle_size, model_input_size, validation_ratio, train_number)
-    elif train_type == 4:
-        # load train data from prepicked results
-        train_data, train_label, eval_data, eval_label = dataLoader.load_trainData_From_PrePickedResults(train_inputDir, train_inputFile, particle_size, model_input_size, validation_ratio, train_number)
     else:
         print("ERROR: invalid value of train_type:", train_type)    
 
