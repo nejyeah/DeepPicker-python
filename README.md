@@ -1,7 +1,5 @@
 # DeepPicker
 
-------- By Wang Feng 2016/06/14-------
-
 More details about 'DeepPicker', please refer to the paper [DeepPicker](https://arxiv.org/abs/1605.01838). 
 This is the python version based on [TensorFlow](https://www.tensorflow.org/). 
 It only supports Ubuntu 12.0+, centOS 7.0+, and RHEL 7.0+.
