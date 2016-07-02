@@ -172,7 +172,7 @@ So the final picked coordinate files are produced in '../autopick-results-by-dem
 ### 6.2 cooperate with Relion 2D classification 
 This is a practical way to do the particle picking cooperating with Relion 2D classification.
 
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. It is OK to do your automatic picking job based on this model. Or you can train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the automatic particle picking job. The threshold can be set a little smaller like 0.4.
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. It is OK to do your automatic picking job based on this model. Or you can train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the automatic particle picking job.
 
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.4
 
