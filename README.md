@@ -1,11 +1,11 @@
 # DeepPicker
 
-More details about 'DeepPicker', please refer to the paper [DeepPicker](https://arxiv.org/abs/1605.01838). 
+For more details about 'DeepPicker', please refer to the paper [DeepPicker](https://arxiv.org/abs/1605.01838). 
 This is the python version based on [TensorFlow](https://www.tensorflow.org/). 
 It only supports Ubuntu 12.0+, centOS 7.0+, and RHEL 7.0+.
 
 ## 1. Install TensorFlow 
-Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html#virtualenv-installation) to install it. CUDA-Toolkit 7.5 is required to install the GPU version. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python programs on your machine.
+Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html#virtualenv-installation) for installation. CUDA-Toolkit 7.5 is required to install the GPU version. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python program on your machine.
 
 ## 2. Install other python packages
     
@@ -17,13 +17,13 @@ Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/
 ## 3. Training model
 The main script for training a model is `train.py`. There are 4 ways to train a CNN model.
 
-Type 1: It aims to train the CNN model just based on single molecule. Loading the training data from micrograph directory directly.
+Type 1: It aims to train a CNN model based on a single type of molecule. The script loads the training data from micrograph directory directly.
 
-Type 2: It aims to train the CNN model based on multiple molecules. It coorperates with script `extractData.py` to train a cross-molecule model (see Section 3.2).
+Type 2: It aims to train a CNN model based on multiple types of molecules. It coorperates with script `extractData.py` to train a cross-molecule model (see Section 3.2).
 
 Type 3: It aims to do the iterative training. It is a complement to the fully automatic particle picking which is based on a cross-molecule manner. Here we take the pre-picked particles as training samples to train a new model and then pick the particles based on the new model to mimic the semi-automated manner.
 
-Type 4: It aims to improve the picking results coorperating with Relion 2D classification. It is a complement to the fully automatic particle picking. After fully automatic particle picking, do the Relion 2D classification job to the picked particles and save the good class averaging results in a `.star` file. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model. 
+Type 4: It aims to improve the picking results coorperating with Relion 2D classification. It is a complement to the fully automatic particle picking. When the fully automatic particle picking finished, do the Relion 2D classification job to the picked particles and save the good class averaging results in a `.star` file. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model. 
  
 All the following commands can be found in the `Makefile`.
 
@@ -43,7 +43,7 @@ run the script `train.py`:
 
     python train.py --train_type 1 --train_inputDir '/media/bioserver1/Data/paper_test/trpv1/train' --particle_size 180 --mrc_number 100 --particle_number 10000 --coordinate_symbol '_manual_checked' --model_save_dir '../trained_model' --model_save_file 'model_demo_type1'
 
-After finished, the trained model will be saved in file **'../trained_model/model_demo_type1'**.
+When finished, the trained model will be saved in file **'../trained_model/model_demo_type1'**.
 
 ### 3.2 Train Type2
 Before training a model in multi-molecule manner, the positive samples and negative samples from different molecules should be extracted through script `extractData.py` at first.
@@ -65,7 +65,7 @@ run the script `extractData.py`:
     # extract the samples of molecule B
     python extractData.py --inputDir '/media/bioserver1/Data/paper_test/molecule_B/train/' --particle_size 180 --mrc_number 100 --coordinate_symbol '_manual_checked' --save_dir '../extracted_data' --save_file 'molecule_B.pickle'
 
-After finished, the particles of molecule A and molecule B are stored in **'../extracted_data/molecule_A.pickle'** and **'../extracted_data/molecule_B.pickle'** respectively.
+When finished, the particles of molecule A and molecule B are stored in **'../extracted_data/molecule_A.pickle'** and **'../extracted_data/molecule_B.pickle'** respectively.
 
 #### 3.2.2 training
 Options for training model in multi-molecule manner are:
@@ -81,7 +81,7 @@ run the script `train.py`:
 
     python train.py --train_type 2 --train_inputDir '../extracted_data' --train_inputFile 'molecule_A.pickle;molecule_B.pickle' --particle_number 10000 --model_save_dir '../trained_model' --model_save_file 'model_demo_type2_molecule_A_B'
 
-After finished, the trained model will be saved in file **'../trained_model/model_demo_type2_molecule_A_B'**.  The model was trained by two kinds of molecules, each contributes 5,000 positive training samples.  
+When finished, the trained model will be saved in file **'../trained_model/model_demo_type2_molecule_A_B'**.  The model was trained by two kinds of molecules, each contributes 5,000 positive training samples.  
 
 ### 3.3 Train Type 3
 Before we do the iterative training, we need to pick the particles based on pre-trained model. Suppose we have finished the picking step in Section 4. Then we can train a new model based on the picked results.
@@ -96,7 +96,7 @@ run the script `train.py`:
  
     python train.py --train_type 3 --train_inputDir '/media/bioserver1/Data/paper_test/trpv1/test/' --train_inputFile '../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle' --particle_size 180 --particle_number 10000 --model_save_dir '../trained_model' --model_save_file 'model_demo_type3_trpv1_iter1_by_molecule_A_B'
 
-After finished, the trained model will be saved in file **'../trained_model/model_demo_type3_trpv1_iter1_by_molecule_A_B'**
+When finished, the trained model will be saved in file **'../trained_model/model_demo_type3_trpv1_iter1_by_molecule_A_B'**
 
 ### 3.4 Train Type 4
 Options for training model based on Relion 2D classification results are:
@@ -112,7 +112,7 @@ run the script `train.py`:
     
     python train.py --train_type 4 --train_inputFile '/media/bioserver1/Data/paper_test/trpv1/train/trpv1_manualpick_less.star' --particle_size 180 --particle_number -1 --model_save_dir '../trained_model' --model_save_file 'model_demo_type4'
 
-After finished, the trained model will be saved in **'../trained_model/model_demo_type4'**.
+When finished, the trained model will be saved in **'../trained_model/model_demo_type4'**.
 
 ## 4. Picking
 Options for picking particles based on pre-trained model are:
@@ -130,7 +130,7 @@ Options for picking particles based on pre-trained model are:
     python autoPick.py --inputDir '/media/bioserver1/Data/paper_test/trpv1/test/' --pre_trained_model '../trained_model/model_demo_type2_molecule_A_B' --particle_size 180 --mrc_number 20 --outputDir '../autopick-trpv1-by-demo-molecule-A-B' --coordinate_symbol '_cnnPick' --threshold 0.5
 
 
-After finished, the picked coordinate file will be saved in **'../autopick-trpv1-by-demo-molecule-A-B'**. The format of the coordinate file is Relion '.star'.
+When finished, the picked coordinate file will be saved in **'../autopick-trpv1-by-demo-molecule-A-B'**. The format of the coordinate file is Relion '.star'.
 
 Besides, a binary file called **'../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle'** is produced. It contains all the particles information. It will be used to do an iterative training or to estimate the precision and recall compared to the reference (e.g. manyally picked by experts).
 
@@ -149,7 +149,7 @@ run the script `analysis_pick_results.py`:
 
     python analysis_pick_results.py --inputFile '../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle' --inputDir '/media/bioserver1/Data/paper_test/trpv1/test' --particle_size 180 --coordinate_symbol '_refine_frealign' --minimum_distance_rate 0.2
 
-After finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall value as well as the deviation of the center.
+When finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall value as well as the deviation of the center.
 
 ## 6. Recommended procedure
 ### 6.1 fully automated particle picking
@@ -164,7 +164,7 @@ Step 2, do the iterative training (see Section 3.3):
     python train.py --train_type 3 --train_inputDir 'Your_mrc_file_DIR' --train_inputFile '../autopick-results-by-demo-type3/autopick_results.pickle' --particle_size Your_particle_size --particle_number 10000 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_iter1_by_type3'
     
 Step 3, do the final picking job (see Section 3.2):
-
+    
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_iter1_by_type3' --particle_size Your_particle_size --mrc_number -1 --outputDir '../autopick-results-by-demo-type3-iter1' --coordinate_symbol '_cnnPick' --threshold 0.5
 
 So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-iter1'.
