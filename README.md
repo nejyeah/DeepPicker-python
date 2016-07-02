@@ -132,7 +132,7 @@ Options for picking particles based on pre-trained model are:
 
 When finished, the picked coordinate file will be saved in **'../autopick-trpv1-by-demo-molecule-A-B'**. The format of the coordinate file is Relion '.star'.
 
-Besides, a binary file called **'../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle'** is produced. It contains all the particles information. It will be used to do an iterative training or to estimate the precision and recall compared to the reference (e.g. manyally picked by experts).
+Besides, a binary file called **'../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle'** is produced. It contains all the particles information. It will be used to do an iterative training or to estimate the precision and recall compared to the reference (e.g. manually picked by experts).
 
 ## 5. Comparing the picking results with reference
 The script `analysis_pick_results.py` is used to estimate the precision and recall based on the reference results (e.g. manually picked by experts).
