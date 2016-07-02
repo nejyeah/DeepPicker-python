@@ -28,7 +28,7 @@ Type 4: It aims to improve the picking results coorperating with Relion 2D class
 All the following commands can be found in the `Makefile`.
 
 ### 3.1 Train Type 1
-Options for training model in single-molecule manner:
+Options for training model in single-molecule manner are:
 
     --train_type, 1, specify the training type
     --train_inputDir, string, specify the directory of micrograph files, like '/media/bioserver1/Data/paper_test/trpv1/train/'
@@ -48,7 +48,7 @@ After finished, the trained model will be saved in file **'../trained_model/mode
 ### 3.2 Train Type2
 Before training a model in multi-molecule manner, the positive samples and negative samples from different molecules should be extracted through script `extractData.py` at first.
 #### 3.2.1 extract particles into numpy binary file
-Options for extracting the positive and negative samples into a binary file:
+Options for extracting the positive and negative samples into a binary file are:
 
     --inputDir, string, specify the directory of micrograph files
     --particle_size, int, the size of the particle
@@ -68,7 +68,7 @@ run the script `extractData.py`:
 After finished, the particles of molecule A and molecule B are stored in **'../extracted_data/molecule_A.pickle'** and **'../extracted_data/molecule_B.pickle'** respectively.
 
 #### 3.2.2 training
-Options for training model in multi-molecule manner:
+Options for training model in multi-molecule manner are:
 
     --train_type, 2, specify the training type
     --train_inputDir, string, specify the input directory, like '../extracted_data'
@@ -84,8 +84,8 @@ run the script `train.py`:
 After finished, the trained model will be saved in file **'../trained_model/model_demo_type2_molecule_A_B'**.  The model was trained by two kinds of molecules, each contributes 5,000 positive training samples.  
 
 ### 3.3 Train Type 3
-Before we do the iterative training, we need the pick the particles based on pre-trained model. Suppose we have done the picking step in Section 4. Then we can train a new model based on the picked results.
-Options for training model based on pre-picked results:
+Before we do the iterative training, we need to pick the particles based on pre-trained model. Suppose we have finished the picking step in Section 4. Then we can train a new model based on the picked results.
+Options for training model based on pre-picked results are:
 
     --train_type, 3, specify the training type
     --train_inputDir, string, specify the input directory of the micrograph files
@@ -99,7 +99,7 @@ run the script `train.py`:
 After finished, the trained model will be saved in file **'../trained_model/model_demo_type3_trpv1_iter1_by_molecule_A_B'**
 
 ### 3.4 Train Type 4
-Options for training model based on Relion 2D classification results:
+Options for training model based on Relion 2D classification results are:
 
     --train_type, 4, specify the training type
     --train_inputFile, string, specify the input `.star` file, like '/${YOUR_PATH}/classification2D.star'
@@ -115,8 +115,7 @@ run the script `train.py`:
 After finished, the trained model will be saved in **'../trained_model/model_demo_type4'**.
 
 ## 4. Picking
-Picking the particles based on previous trained model.
-Options:
+Options for picking particles based on pre-trained model are:
 
     --inputDir, string, specify the directory of micrograph files 
     --particle_size, int, the size of the particle
