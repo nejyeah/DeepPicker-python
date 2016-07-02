@@ -189,4 +189,3 @@ Step 4, do the final picking job.
 
 So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-2D'.
 
-If you have any questions, please contact me at "*feng_wang@hust.edu.cn*".
