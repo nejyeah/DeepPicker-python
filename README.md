@@ -25,12 +25,12 @@ Type 2: It aims to train the CNN model based on muti-molecules. It coorperates w
 
 Type 3: It aims to do the iterative training. It is a complement to the fully automatic particle picking which is based on a cross-molecule manner. Here we take the pre-picked particles as training samples to train a new model and then pick the particles based on the new model to mimic the semi-automated manner.
 
-Type 4: It aims to improve the picking results coorperating with Relion 2D classification. It is a complement to the fully automatic particle picking. After fully automatic particle picking, do the Relion 2D classification to the picked particles and save the good class averaging results in a `.star`. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model.
+Type 4: It aims to improve the picking results coorperating with Relion 2D classification. It is a complement to the fully automatic particle picking. After fully automatic particle picking, do the Relion 2D classification job to the picked particles and save the good class averaging results in a `.star`. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model. 
  
 All the following commands can be found in the `Makefile`.
 
 ### 3.1 Train Type 1
-Options for training model in a semi-automated manner:
+Options for training model based on single-molecule:
 
     --train_type, 1, specify the training type
     --train_inputDir, string, specify the directory of micrograph files, like '/media/bioserver1/Data/paper_test/trpv1/train/'
@@ -48,7 +48,7 @@ run the script `train.py`:
 After finished, the trained model will be saved in file **'../trained_model/model_demo_type1'**.
 
 ### 3.2 Train Type2
-Before training a model based on different molecules, the positive samples and negative samples from different molecules should be extracted through script `extractData.py` at first.
+Before training a model based on muti-molecules, the positive samples and negative samples from different molecules should be extracted through script `extractData.py` at first.
 #### 3.2.1 extract particles into numpy binary file
 Options for extracting the positive and negative samples into a binary file:
 
@@ -70,7 +70,7 @@ run the script `extractData.py`:
 After finished, the particles of molecule A and molecule B are stored in **'../extracted_data/molecule_A.pickle'** and **'../extracted_data/molecule_B.pickle'** respectively.
 
 #### 3.2.2 training
-Options for cross-molecule training:
+Options for training model based on muti-molecules:
 
     --train_type, 2, specify the training type
     --train_inputDir, string, specify the input directory, like '../extracted_data'
@@ -86,7 +86,7 @@ run the script `train.py`:
 After finished, the trained model will be saved in file **'../trained_model/model_demo_type2_molecule_A_B'**.  The model was trained by two kinds of molecules, each contributes 5,000 positive training samples.  
 
 ### 3.3 Train Type 3
-Before we do the iterative training, we need the pick the particles based on previous trained model. Suppose we have done the picking step in Section 3. Then we can train a new model based on the picked results.
+Before we do the iterative training, we need the pick the particles based on pre-trained model. Suppose we have done the picking step in Section 4. Then we can train a new model based on the picked results.
 Options for training model based on pre-picked results:
 
     --train_type, 3, specify the training type
@@ -101,7 +101,7 @@ run the script `train.py`:
 After finished, the trained model will be saved in file **'../trained_model/model_demo_type3_trpv1_iter1_by_molecule_A_B'**
 
 ### 3.4 Train Type 4
-Options for training:
+Options for training model based on Relion 2D classification results:
 
     --train_type, 4, specify the training type
     --train_inputFile, string, specify the input `.star` file, like '/${YOUR_PATH}/classification2D.star'
@@ -174,9 +174,9 @@ So the final picked coordinate files are produced in '../autopick-results-by-dem
 ### 6.2 cooperate with Relion 2D classification 
 This is a practical way to do the particle picking cooperating with Relion 2D classification.
 
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. It is OK to do your automatic picking job based on this model. Or you can train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the automatic particle picking job. 
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. It is OK to do your automatic picking job based on this model. Or you can train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the automatic particle picking job. The threshold can be set a little smaller like 0.4.
 
-    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.5
+    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.4
 
 Step 2, do the 2D classification in Relion based on the picked coordinate files in '../autopick-results-by-demo-type3'. 
 Select those good average results to store in a '.star' file, like 'classification2D_demo.star'.
