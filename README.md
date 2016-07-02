@@ -23,9 +23,9 @@ Type 1: It aims to train the CNN model just based on single-molecule. Load the t
 
 Type 2: It aims to train the CNN model based on muti-molecules. It coorperates with script `extractData.py` to train a cross-molecule model (see Section 3.2).
 
-Type 3: Load the training data from pre-picked results. It is used for iterative training.
+Type 3: It aims to do the iterative training. It is a complement to the fully automatic particle picking which is based on a cross-molecule manner. Here we take the pre-picked particles as training samples to train a new model and then pick the particles based on the new model to mimic the semi-automated manner.
 
-Type 4: Load the training data from the relion `.star` file. The `.star` should contain all the training positive samples. It can be a `classification2D.star`. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model. 
+Type 4: It aims to improve the picking results coorperating with Relion 2D classification. It is a complement to the fully automatic particle picking. After fully automatic particle picking, do the 2D classification job to the picked particles based on Relion and save the good class averaging results in a `.star`. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model.
  
 All the following commands can be found in the `Makefile`.
 
