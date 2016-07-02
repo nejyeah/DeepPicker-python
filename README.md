@@ -25,7 +25,7 @@ Type 3: It aims to do the iterative training. It is a complement to the fully au
 
 Type 4: It aims to improve the picking results coorperating with Relion 2D classification. It is a complement to the fully automatic particle picking. When the fully automatic particle picking finished, do the Relion 2D classification job to the picked particles and save the good class averaging results in a `.star` file. The program will extract all the particles in the `.star` file as the positive samples to train a CNN model. 
  
-All the following commands can be found in the `Makefile`.
+All the following commands can be found in the `Makefile`. 
 
 ### 3.1 Train Type 1
 Options for training model in single-molecule manner are:
@@ -149,13 +149,13 @@ run the script `analysis_pick_results.py`:
 
     python analysis_pick_results.py --inputFile '../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle' --inputDir '/media/bioserver1/Data/paper_test/trpv1/test' --particle_size 180 --coordinate_symbol '_refine_frealign' --minimum_distance_rate 0.2
 
-When finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall value as well as the deviation of the center.
+When finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall value as well as the deviation of the center compared with the reference.
 
 ## 6. Recommended procedure
 ### 6.1 fully automated particle picking
 This is the way we used in our paper to do the fully automated particle picking. There are three steps.
 
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. The number of positive samples for training is 30,000. It is OK to do your automatic particle picking job based on this model. Or you can train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the picking job. 
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. The number of positive samples for training is 30,000. You can either do your automatic particle picking job based on this model or train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the picking job. 
 
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.5
 
@@ -172,7 +172,7 @@ So the final picked coordinate files are produced in '../autopick-results-by-dem
 ### 6.2 cooperate with Relion 2D classification 
 This is a practical way to do the particle picking cooperating with Relion 2D classification.
 
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. It is OK to do your automatic picking job based on this model. Or you can train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the automatic particle picking job.
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. You can either do your automatic picking job based on this model or train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the automatic particle picking job.
 
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.4
 
