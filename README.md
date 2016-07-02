@@ -163,7 +163,8 @@ Step 2, do the iterative training (see Section 3.3):
 
     python train.py --train_type 3 --train_inputDir 'Your_mrc_file_DIR' --train_inputFile '../autopick-results-by-demo-type3/autopick_results.pickle' --particle_size Your_particle_size --particle_number 10000 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_iter1_by_type3'
     
-Step 3, do the final picking job (see Section 3.2)
+Step 3, do the final picking job (see Section 3.2):
+
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_iter1_by_type3' --particle_size Your_particle_size --mrc_number -1 --outputDir '../autopick-results-by-demo-type3-iter1' --coordinate_symbol '_cnnPick' --threshold 0.5
 
 So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-iter1'.
