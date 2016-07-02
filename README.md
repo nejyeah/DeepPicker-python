@@ -17,9 +17,9 @@ Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/
 ## 3. Training model
 The main script for training a model is `train.py`. There are 4 ways to train a CNN model.
 
-Type 1: It aims to train the CNN model just based on single-molecule. Load the training data from micrograph directory directly.
+Type 1: It aims to train the CNN model just based on single molecule. Loading the training data from micrograph directory directly.
 
-Type 2: It aims to train the CNN model based on muti-molecules. It coorperates with script `extractData.py` to train a cross-molecule model (see Section 3.2).
+Type 2: It aims to train the CNN model based on multiple molecules. It coorperates with script `extractData.py` to train a cross-molecule model (see Section 3.2).
 
 Type 3: It aims to do the iterative training. It is a complement to the fully automatic particle picking which is based on a cross-molecule manner. Here we take the pre-picked particles as training samples to train a new model and then pick the particles based on the new model to mimic the semi-automated manner.
 
@@ -28,7 +28,7 @@ Type 4: It aims to improve the picking results coorperating with Relion 2D class
 All the following commands can be found in the `Makefile`.
 
 ### 3.1 Train Type 1
-Options for training model based on single-molecule:
+Options for training model in single-molecule manner:
 
     --train_type, 1, specify the training type
     --train_inputDir, string, specify the directory of micrograph files, like '/media/bioserver1/Data/paper_test/trpv1/train/'
@@ -46,7 +46,7 @@ run the script `train.py`:
 After finished, the trained model will be saved in file **'../trained_model/model_demo_type1'**.
 
 ### 3.2 Train Type2
-Before training a model based on muti-molecules, the positive samples and negative samples from different molecules should be extracted through script `extractData.py` at first.
+Before training a model in multi-molecule manner, the positive samples and negative samples from different molecules should be extracted through script `extractData.py` at first.
 #### 3.2.1 extract particles into numpy binary file
 Options for extracting the positive and negative samples into a binary file:
 
@@ -68,7 +68,7 @@ run the script `extractData.py`:
 After finished, the particles of molecule A and molecule B are stored in **'../extracted_data/molecule_A.pickle'** and **'../extracted_data/molecule_B.pickle'** respectively.
 
 #### 3.2.2 training
-Options for training model based on muti-molecules:
+Options for training model in multi-molecule manner:
 
     --train_type, 2, specify the training type
     --train_inputDir, string, specify the input directory, like '../extracted_data'
