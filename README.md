@@ -2,7 +2,7 @@
 
 For more details about 'DeepPicker', please refer to the paper [DeepPicker](https://arxiv.org/abs/1605.01838). 
 This is the python version based on [TensorFlow](https://www.tensorflow.org/). 
-It only supports Ubuntu 12.0+, centOS 7.0+, and RHEL 7.0+.
+So far it only supports Ubuntu 12.0+, centOS 7.0+, and RHEL 7.0+.
 
 ## 1. Install TensorFlow 
 Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html#virtualenv-installation) for installation. CUDA-Toolkit 7.5 is required to install the GPU version. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python program on your machine.
@@ -14,7 +14,7 @@ Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/
     > sudo apt-get install python-matplotlib
     > sudo apt-get install python-scipy
     
-## 3. Training model
+## 3. Training the model
 The main script for training a model is `train.py`. There are 4 ways to train a CNN model.
 
 Type 1: It aims to train a CNN model based on a single type of molecule. The script loads the training data from micrograph directory directly.
@@ -132,10 +132,10 @@ Options for picking particles based on pre-trained model are:
 
 When finished, the picked coordinate file will be saved in **'../autopick-trpv1-by-demo-molecule-A-B'**. The format of the coordinate file is Relion '.star'.
 
-Besides, a binary file called **'../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle'** is produced. It contains all the particles information. It will be used to do an iterative training or to estimate the precision and recall compared to the reference (e.g. manually picked by experts).
+Besides, a binary file called **'../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle'** is produced. It contains all the particles information. It will be used to do an iterative training or to estimate the precision and recall compared to the reference (e.g., those particles manually picked by experts).
 
 ## 5. Comparing the picking results with reference
-The script `analysis_pick_results.py` is used to estimate the precision and recall based on the reference results (e.g. manually picked by experts).
+The script `analysis_pick_results.py` is used to estimate the precision and recall based on the reference results (e.g., those particles manually picked by experts).
 
 Options:
  
@@ -149,13 +149,13 @@ run the script `analysis_pick_results.py`:
 
     python analysis_pick_results.py --inputFile '../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle' --inputDir '/media/bioserver1/Data/paper_test/trpv1/test' --particle_size 180 --coordinate_symbol '_refine_frealign' --minimum_distance_rate 0.2
 
-When finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall value as well as the deviation of the center compared with the reference.
+When finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall values as well as the deviations of the centers from the reference particles.
 
 ## 6. Recommended procedure
 ### 6.1 fully automated particle picking
 This is the way we used in our paper to do the fully automated particle picking. There are three steps.
 
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. The number of positive samples for training is 30,000. You can either do your automatic particle picking job based on this model or train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the picking job. 
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2 in our paper) with three types of molecules, including TRPV1, gammas-secretase and spliceosome. The number of positive samples for training is 30,000. You can either do your automatic particle picking job based on this model or train your own model based on more types of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the picking job. 
 
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.5
 
@@ -172,7 +172,7 @@ So the final picked coordinate files are produced in '../autopick-results-by-dem
 ### 6.2 cooperate with Relion 2D classification 
 This is a practical way to do the particle picking cooperating with Relion 2D classification.
 
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2) with three kinds of molecules, TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. You can either do your automatic picking job based on this model or train your own model based on more kinds of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the automatic particle picking job.
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner with three types of molecules, including TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. You can either do your automatic picking job based on this model or train your own model based on more kinds of molecules and more training samples. After you get a pre-trained model, do the automatic particle picking job.
 
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.4
 
@@ -188,4 +188,6 @@ Step 4, do the final picking job.
     python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_2D' --particle_size Your_particle_size --mrc_number -1 --outputDir '../autopick-results-by-demo-type3-2D' --coordinate_symbol '_cnnPick' --threshold 0.5
 
 So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-2D'.
+
+If you have any questions, please contact us at "*nejzyj@gmail.com*".
 
