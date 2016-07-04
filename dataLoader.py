@@ -1,6 +1,6 @@
 import os
 import struct
-import Image
+from PIL import Image
 from pylab import *
 import numpy as np
 import re
