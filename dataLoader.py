@@ -1,6 +1,6 @@
 import os
 import struct
-from PIL import Image
+import Image
 from pylab import *
 import numpy as np
 import re
@@ -12,9 +12,9 @@ import scipy.ndimage
 import tensorflow as tf
 import random
 from operator import itemgetter, attrgetter
+from matplotlib import pyplot as plt
 
 import display 
-import mrc
 from starReader import starRead
 
 class DataLoader(object):
@@ -77,11 +77,24 @@ class DataLoader(object):
         """
         #mrc_col = micrograph.shape[0]
         #mrc_row = micrograph.shape[1]
-     
+        # lowpass
+        micrograph = scipy.ndimage.filters.gaussian_filter(micrograph, 0.1) 
         # do the bin process 
         pooling_size = 3
         micrograph = DataLoader.bin_2d(micrograph, pooling_size)
- 
+
+        # low pass the micrograph
+        #micrograph_lowpass = scipy.ndimage.filters.gaussian_filter(micrograph, 0.1) 
+        #f = np.fft.fft2(micrograph)
+        #fshift = np.fft.fftshift(f)
+        #magnitude_spectrum = 20*np.log(np.abs(fshift))
+
+        #plt.subplot(121),plt.imshow(micrograph, cmap = 'gray')
+        #plt.title('Input Image'), plt.xticks([]), plt.yticks([])
+        #plt.subplot(122),plt.imshow(micrograph_lowpass, cmap = 'gray')
+        #plt.title('Magnitude Spectrum'), plt.xticks([]), plt.yticks([])
+        #plt.show() 
+
         # nomalize the patch
         max_value = micrograph.max()
         min_value = micrograph.min()
@@ -89,6 +102,7 @@ class DataLoader(object):
         mean_value = micrograph.mean()
         std_value = micrograph.std()
         micrograph = (micrograph - mean_value)/std_value
+        #
         return micrograph, pooling_size
 
     @staticmethod
