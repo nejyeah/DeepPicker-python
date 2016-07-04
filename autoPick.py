@@ -69,6 +69,9 @@ def pick_particle():
     mrc_file_all.sort()
     if mrc_number<=0:
         mrc_number = len(mrc_file_all)
+
+    if mrc_number > len(mrc_file_all):
+        mrc_number = len(mrc_file_all)
     
     with tf.Session() as sess:
         # reload the pre-trained model
