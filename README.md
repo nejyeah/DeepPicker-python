@@ -9,10 +9,12 @@ For more details about [Tensorflow](https://www.tensorflow.org/), please refer t
 
 ### 1.1 Install Cuda Toolkit 7.5
 download and install Cuda Toolkit 7.5
+
 https://developer.nvidia.com/cuda-downloads
 
 ### 1.2 Install cudnn v4
 Download and install cuDNN v4
+
 https://developer.nvidia.com/cuda-downloads
 
 Uncompress and copy the cuDNN files into the toolkit directory. Assuming the toolkit is installed in /usr/local/cuda, run the following commands (edited to reflect the cuDNN version you downloaded):
