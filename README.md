@@ -5,15 +5,130 @@ This is the python version based on [TensorFlow](https://www.tensorflow.org/).
 So far it only supports Ubuntu 12.0+, centOS 7.0+, and RHEL 7.0+.
 
 ## 1. Install TensorFlow 
-Please refer to the website of [Tensorflow](https://www.tensorflow.org/versions/r0.8/get_started/os_setup.html#virtualenv-installation) for installation. CUDA-Toolkit 7.5 is required to install the GPU version. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python program on your machine.
+For more details about [Tensorflow](https://www.tensorflow.org/), please refer to the [website](https://www.tensorflow.org/). Cuda toolkit 7.5 and cuDNN v4 are required to install the GPU version of Tensorflow. There are 5 different ways to install tensorflow, and "Virtualenv install" is recommended for not impacting any existing Python program on your machine.
 
-## 2. Install other python packages
+### 1.1 Install Cuda Toolkit 7.5
+download and install Cuda Toolkit 7.5
+https://developer.nvidia.com/cuda-downloads
+
+### 1.2 Install cudnn v4
+Download and install cuDNN v4
+https://developer.nvidia.com/cuda-downloads
+
+Uncompress and copy the cuDNN files into the toolkit directory. Assuming the toolkit is installed in /usr/local/cuda, run the following commands (edited to reflect the cuDNN version you downloaded):
+
+    tar xvzf cudnn-7.0-linux-x64-v4.0-prod.tgz
+    sudo cp cudnn-7.0-linux-x64-v4/cudnn.h /usr/local/cuda/include
+    sudo cp cudnn-7.0-linux-x64-v4/libcudnn* /usr/local/cuda/lib64
+    sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn
+
+### 1.3 Virtualenv installation of Tensorflow
+[Virtualenv](https://pypi.python.org/pypi/virtualenv) is a tool to keep the dependencies required by different Python projects in separate places. The Virtualenv installation of TensorFlow will not override pre-existing version of the Python packages needed by TensorFlow.
+
+With [Virtualenv](https://pypi.python.org/pypi/virtualenv) the installation is as follows:
+
+ - Install pip and Virtualenv.
+ - Create a Virtualenv environment.
+ - Activate the Virtualenv environment and install TensorFlow in it.
+ - After the install you will activate the Virtualenv environment each time you want to use TensorFlow.
+ 
+Install pip abd Virtualenv:
+
+    # Ubuntu/Linux 64-bit
+    $ sudo apt-get install python-pip python-dev python-virtualenv
+
+Create a Virtualenv environment in the directory ~/tensorflow:
+
+    $ virtualenv --system-site-packages ~/tensorflow
+
+Activate the environment:
+
+    $ source ~/tensorflow/bin/activate  # If using bash
+$ source ~/tensorflow/bin/activate.csh  # If using csh
+    (tensorflow)$  # Your prompt should change
+
+Now, install TensorFlow just as you would for a regular Pip installation:
+
+    # Ubuntu/Linux 64-bit, GPU enabled, Python 2.7 
+    # Requires CUDA toolkit 7.5 and CuDNN v4. 
+    (tensorflow)$ pip install --upgrade https://storage.googleapis.com/tensorflow/linux/gpu/tensorflow-0.9.0-cp27-none-linux_x86_64.whl
+
+With the Virtualenv environment activated, you can now test your installation.
+
+    $ python
+    ...
+    >>> import tensorflow as tf
+    >>> hello = tf.constant('Hello, TensorFlow!')
+    >>> sess = tf.Session()
+    >>> print(sess.run(hello))
+    Hello, TensorFlow!
+    >>> a = tf.constant(10)
+    >>> b = tf.constant(32)
+    >>> print(sess.run(a + b))
+    42
+    >>>
+
+When you are done using TensorFlow, deactivate the environment.
+
+    (tensorflow)$ deactivate
+$  # Your prompt should change back
+
+To use TensorFlow later you will have to activate the Virtualenv environment again:
+
+    $ source ~/tensorflow/bin/activate  # If using bash.
+$ source ~/tensorflow/bin/activate.csh  # If using csh.
+    (tensorflow)$  # Your prompt should change.
+    
+    # Run Python programs that use TensorFlow.
+    ...
+    # When you are done using TensorFlow, deactivate the environment.
+    (tensorflow)$ deactivate
+
+### 1.4 Install other python packages
     
     # install package matplotlib and scipy
     # ubuntu system
     > sudo apt-get install python-matplotlib
     > sudo apt-get install python-scipy
+
+## 2. Recommended procedure
+### 2.1 fully automated particle picking
+This is the way we used in our paper to do the fully automated particle picking. There are three steps.
+
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2 in our paper) with three types of molecules, including TRPV1, gammas-secretase and spliceosome. The number of positive samples for training is 30,000. You can either do your automatic particle picking job based on this model or train your own model based on more types of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the picking job. 
+
+    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.5
+
+Step 2, do the iterative training (see Section 3.3):
+
+    python train.py --train_type 3 --train_inputDir 'Your_mrc_file_DIR' --train_inputFile '../autopick-results-by-demo-type3/autopick_results.pickle' --particle_size Your_particle_size --particle_number 10000 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_iter1_by_type3'
     
+Step 3, do the final picking job (see Section 3.2):
+    
+    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_iter1_by_type3' --particle_size Your_particle_size --mrc_number -1 --outputDir '../autopick-results-by-demo-type3-iter1' --coordinate_symbol '_cnnPick' --threshold 0.5
+
+So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-iter1'.
+
+### 2.2 cooperate with Relion 2D classification 
+This is a practical way to do the particle picking cooperating with Relion 2D classification.
+
+Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner with three types of molecules, including TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. You can either do your automatic picking job based on this model or train your own model based on more kinds of molecules and more training samples. After you get a pre-trained model, do the automatic particle picking job.
+
+    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.4
+
+Step 2, do the 2D classification in Relion based on the picked coordinate files in '../autopick-results-by-demo-type3'. 
+Select those good average results to store in a '.star' file, like 'classification2D_demo.star'.
+
+Step 3, do the training job based on the 'classification2D_demo.star' (see Section 3.4)
+
+    python train.py --train_type 4 --train_inputFile '/Your_DIR/classification2D_demo.star' --particle_size Your_particle_size --particle_number -1 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_2D'
+    
+Step 4, do the final picking job.
+
+    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_2D' --particle_size Your_particle_size --mrc_number -1 --outputDir '../autopick-results-by-demo-type3-2D' --coordinate_symbol '_cnnPick' --threshold 0.5
+
+So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-2D'.
+
 ## 3. Training the model
 The main script for training a model is `train.py`. There are 4 ways to train a CNN model.
 
@@ -150,44 +265,6 @@ run the script `analysis_pick_results.py`:
     python analysis_pick_results.py --inputFile '../autopick-trpv1-by-demo-molecule-A-B/autopick_results.pickle' --inputDir '/media/bioserver1/Data/paper_test/trpv1/test' --particle_size 180 --coordinate_symbol '_refine_frealign' --minimum_distance_rate 0.2
 
 When finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall values as well as the deviations of the centers from the reference particles.
-
-## 6. Recommended procedure
-### 6.1 fully automated particle picking
-This is the way we used in our paper to do the fully automated particle picking. There are three steps.
-
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner (see Section 3.2 in our paper) with three types of molecules, including TRPV1, gammas-secretase and spliceosome. The number of positive samples for training is 30,000. You can either do your automatic particle picking job based on this model or train your own model based on more types of molecules and more training samples (see Section 3.2). After you get a pre-trained model, do the picking job. 
-
-    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.5
-
-Step 2, do the iterative training (see Section 3.3):
-
-    python train.py --train_type 3 --train_inputDir 'Your_mrc_file_DIR' --train_inputFile '../autopick-results-by-demo-type3/autopick_results.pickle' --particle_size Your_particle_size --particle_number 10000 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_iter1_by_type3'
-    
-Step 3, do the final picking job (see Section 3.2):
-    
-    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_iter1_by_type3' --particle_size Your_particle_size --mrc_number -1 --outputDir '../autopick-results-by-demo-type3-iter1' --coordinate_symbol '_cnnPick' --threshold 0.5
-
-So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-iter1'.
-
-### 6.2 cooperate with Relion 2D classification 
-This is a practical way to do the particle picking cooperating with Relion 2D classification.
-
-Step 1, before doing the automatic picking job, a pre-trained model is needed. Here we have offered a demo model in './trained_model/model_demo_type3'. It was trained in a cross-molecule manner with three types of molecules, including TRPV1, gammas-secretase and spliceosome. And the number of positive samples for training is 30,000. You can either do your automatic picking job based on this model or train your own model based on more kinds of molecules and more training samples. After you get a pre-trained model, do the automatic particle picking job.
-
-    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3' --particle_size Your_particle_size --mrc_number 100 --outputDir '../autopick-results-by-demo-type3' --coordinate_symbol '_cnnPick' --threshold 0.4
-
-Step 2, do the 2D classification in Relion based on the picked coordinate files in '../autopick-results-by-demo-type3'. 
-Select those good average results to store in a '.star' file, like 'classification2D_demo.star'.
-
-Step 3, do the training job based on the 'classification2D_demo.star' (see Section 3.4)
-
-    python train.py --train_type 4 --train_inputFile '/Your_DIR/classification2D_demo.star' --particle_size Your_particle_size --particle_number -1 --model_save_dir './trained_model' --model_save_file 'model_demo_type3_2D'
-    
-Step 4, do the final picking job.
-
-    python autoPick.py --inputDir 'Your_mrc_file_DIR' --pre_trained_model './trained_model/model_demo_type3_2D' --particle_size Your_particle_size --mrc_number -1 --outputDir '../autopick-results-by-demo-type3-2D' --coordinate_symbol '_cnnPick' --threshold 0.5
-
-So the final picked coordinate files are produced in '../autopick-results-by-demo-type3-2D'.
 
 If you have any questions, please contact us at "*nejzyj@gmail.com*".
 
