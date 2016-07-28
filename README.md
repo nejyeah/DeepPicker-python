@@ -15,7 +15,7 @@ https://developer.nvidia.com/cuda-downloads
 ### 1.2 Install cudnn v4
 Download and install cuDNN v4
 
-https://developer.nvidia.com/cuda-downloads
+https://developer.nvidia.com/cudnn
 
 Uncompress and copy the cuDNN files into the toolkit directory. Assuming the toolkit is installed in /usr/local/cuda, run the following commands (edited to reflect the cuDNN version you downloaded):
 
