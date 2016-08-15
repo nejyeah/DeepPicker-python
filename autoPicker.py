@@ -154,10 +154,10 @@ class AutoPicker(object):
         #print("image_col:", body_2d.shape[0])
         #print("particle_size:", patch_size)
         #print("step_size:", step_size)
-        map_col = int((body_2d.shape[0]-patch_size)/step_size)
-        map_row = int((body_2d.shape[1]-patch_size)/step_size)
+        #map_col = int((body_2d.shape[0]-patch_size)/step_size)
+        #map_row = int((body_2d.shape[1]-patch_size)/step_size)
          
-        prediction = np.zeros((map_col, map_row), dtype = float)
+        #prediction = np.zeros((map_col, map_row), dtype = float)
         time1 = time.time()
         particle_candidate_all = []
         map_index_col = 0
