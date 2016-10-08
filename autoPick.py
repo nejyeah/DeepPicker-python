@@ -36,7 +36,7 @@ def pick_particle():
     num_class = 2                   # the number of the class
     batch_size = model_input_size[0]
 
-    particle_size = 180
+    particle_size = int(opt.particle_size)
 
     pre_trained_model = opt.pre_trained_model
     input_dir = opt.inputDir
