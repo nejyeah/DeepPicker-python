@@ -124,7 +124,7 @@ class DataLoader(object):
             particle: numpy.array
         """
         # resize the particle to fit the model input
-        particle = scipy.misc.imresize(particle, (model_input_size[1], model_input_size[2]), interp = 'bilinear', mode = 'P')
+        particle = scipy.misc.imresize(particle, (model_input_size[1], model_input_size[2]), interp = 'bilinear', mode = 'L')
         #particle = scipy.ndimage.zoom(particle, float(model_input_size[1])/particle.shape[1])
         # nomalize the patch
         mean_value = particle.mean()
