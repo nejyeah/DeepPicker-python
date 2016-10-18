@@ -102,7 +102,7 @@ def train():
     else:
         print("ERROR: invalid value of train_type:", train_type)    
 
-    display.show_particle(train_data, os.path.join(debug_dir, 'positive.png'))
+    # display.show_particle(train_data, os.path.join(debug_dir, 'positive.png'))
     # test whether train_data exist
     try: 
         train_data
