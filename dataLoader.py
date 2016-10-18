@@ -313,7 +313,7 @@ class DataLoader(object):
             header, body = DataLoader.readMrcFile(key)
             n_col = header[0]
             n_row = header[1]
-            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
+            body_2d = np.array(body, dtype=np.float32).reshape(n_row, n_col, 1)
 
             # show the micrograph with manually picked particles
             # plot the circle of the particle 
@@ -402,9 +402,9 @@ class DataLoader(object):
 
         Returns:
             return train_data,train_labels,validation_data,validation_labels
-            train_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            train_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             train_labels: numpy.array, int64, the shape is (number_samples)  
-            validation_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            validation_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             validation_labels: numpy.array, int64, the shape is (number_samples)  
    
         Raises:
@@ -496,7 +496,7 @@ class DataLoader(object):
             header, body = DataLoader.readMrcFile(mrc_file_coordinate[i])
             n_col = header[0]
             n_row = header[1]
-            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
+            body_2d = np.array(body, dtype=np.float32).reshape(n_row, n_col, 1)
             # read star coordinate
             coordinate = DataLoader.read_coordinate_from_star(file_coordinate[i])
             # show the micrograph with manually picked particles
@@ -586,9 +586,9 @@ class DataLoader(object):
 
         Returns:
             return train_data,train_labels,validation_data,validation_labels
-            train_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            train_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             train_labels: numpy.array, int64, the shape is (number_samples)  
-            validation_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            validation_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             validation_labels: numpy.array, int64, the shape is (number_samples)  
    
         Raises:
@@ -682,7 +682,7 @@ class DataLoader(object):
             header, body = DataLoader.readMrcFile(mrc_file_coordinate[i])
             n_col = header[0]
             n_row = header[1]
-            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
+            body_2d = np.array(body, dtype=np.float32).reshape(n_row, n_col, 1)
             # read star coordinate
             coordinate = DataLoader.read_coordinate_from_star(file_coordinate[i])
             # show the micrograph with manually picked particles
@@ -774,9 +774,9 @@ class DataLoader(object):
             train_number: the number of the total positive samples. If the number is set to 10000, and there are two kinds of molecule, then each one contributes only 5,000 positive samples.  
         Returns:
             return train_data,train_labels,validation_data,validation_labels
-            train_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            train_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             train_labels: numpy.array, int64, the shape is (number_samples)  
-            validation_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            validation_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             validation_labels: numpy.array, int64, the shape is (number_samples)  
    
         Raises:
@@ -849,9 +849,9 @@ class DataLoader(object):
 
         Returns:
             return train_data,train_labels,validation_data,validation_labels
-            train_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            train_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             train_labels: numpy.array, int64, the shape is (number_samples)  
-            validation_data: numpy.array, float32, the shape is (number_samples, particle_size, particle_size, 1)  
+            validation_data: numpy.array, np.float32, the shape is (number_samples, particle_size, particle_size, 1)  
             validation_labels: numpy.array, int64, the shape is (number_samples)  
    
         Raises:
@@ -918,7 +918,7 @@ class DataLoader(object):
             header,body = DataLoader.readMrcFile(mrc_filename)
             n_col = header[0]
             n_row = header[1]
-            body_2d = np.array(body, dtype=float32).reshape(n_row, n_col, 1)
+            body_2d = np.array(body, dtype=np.float32).reshape(n_row, n_col, 1)
 
             # show the micrograph with manually picked particles
             # plot the circle of the particle 

@@ -27,3 +27,7 @@ recommended_step1:
 	python autoPick.py --inputDir '/media/bioserver1/Data/paper_test/dataset/trpv1/test/original' --pre_trained_model '../trained_model/model_demo_type2_ss_gammas' --particle_size 180 --mrc_number 20 --outputDir '../autopick-trpv1-by-demo-ss-gammas' --coordinate_symbol '_cnnPick' --threshold 0.5
 
 recommended_step2:
+
+testTrain:
+	python train.py --train_type 1 --train_inputDir '../data/Micrographs' --particle_size 60 --mrc_number 100 --particle_number 10000 --coordinate_symbol '_manual' --model_save_dir '../trained_model' --model_save_file 'model_test'
+
