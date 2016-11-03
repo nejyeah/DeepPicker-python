@@ -10,9 +10,7 @@ def plot_circle_in_micrograph(micrograph_2d, coordinate, particle_size, filename
  
     Args:
         micrograph_2d: numpy.array,it is a 2D numpy array.
-        coordinate: list, it is a 2D list, the shape is (2, num_particle).
-                    The coordinate[0] is a list of the x coordinate,            
-                    and the coordinate[1] is a list of the y coordinate.
+        coordinate: list, it is a 2D list, the shape is (num_particle, 2).
         particle_size: int, the value of the particle size
         filename: the filename of the image to be save.
         color: define the color of the circle

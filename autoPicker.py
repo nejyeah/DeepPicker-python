@@ -132,9 +132,9 @@ class AutoPicker(object):
         # read the micrograph image data
         print(mrc_filename)
         header, body = DataLoader.readMrcFile(mrc_filename)
-        mrc_col = header[0]
-        mrc_row = header[1]
-        body_2d = np.array(body, dtype = np.float32).reshape(mrc_col, mrc_row)
+        num_col = header[0]
+        num_row = header[1]
+        body_2d = np.array(body, dtype = np.float32).reshape(num_row, num_col)
         
         # do process to micrograph
         body_2d, bin_size = DataLoader.preprocess_micrograph(body_2d)
@@ -161,8 +161,8 @@ class AutoPicker(object):
         time1 = time.time()
         particle_candidate_all = []
         map_index_col = 0
-        for col in range(0, body_2d.shape[0]-patch_size, step_size):
-            for row in range(0, body_2d.shape[1]-patch_size, step_size):
+        for col in range(0, body_2d.shape[0]-patch_size+1, step_size):
+            for row in range(0, body_2d.shape[1]-patch_size+1, step_size):
                 # extract the particle patch
                 patch = np.copy(body_2d[col:(col+patch_size), row:(row+patch_size)])
                 # do preprocess to the particle

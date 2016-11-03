@@ -255,7 +255,47 @@ class DataLoader(object):
     
         body = list(struct.unpack(body_fmt,data[1024:]))
         return header, body
+    
+    # write numpy array to mrc file
+    @staticmethod
+    def writeToMrcFile(body_array, mrc_filename):
+        """Write numpy 2D array to mrc format or numpy 3D array to mrcs format file/
 
+        Store the information of numpy array into mrc format.
+        The header is a tuple, and all the parameters about the mrc file is included in the header tuple.
+        The body is a 1-d list, the data type depends on the mode parameters in header[3]
+        
+        Args:
+            body_array: numpy array, 2D or 3D, type float32, 2D array refers to the micrograph and 3D array refers to the extracted particles 
+            mrc_filename: string, the output mrc file name.
+    
+        Returns:
+            None
+        Raises:
+            None
+        """
+        if body_array.dim() == 2:
+            n_columns = body_array.shape()[0]
+            n_rows = body_array.shape()[1]
+        elif body_array.dim() == 3:
+            n_section = body_array.shape()[0]
+            n_columns = body_array.shape()[1]
+            n_rows = body_array.shape()[2]
+        else:        
+            print("ERROR:the dimension of body_array must be 2 or 3")
+            return
+
+        f = open(fileName,"wb")
+        data = f.read() # read all data
+        f.close()
+    
+        header_fmt = '10i6f3i3f2i100c3f4cifi800c'  # more information about the header please refer to mrc format in Internet.
+        header = struct.unpack(header_fmt,data[0:1024])
+        mode = 2
+        body = list(struct.unpack(body_fmt,data[1024:]))
+        return header, body
+    
+    			
     # read particles data from star format file
     @staticmethod
     def load_Particle_From_starFile(starFileName, particle_size, model_input_size, produce_negative=True, negative_distance_ratio=0.5, negative_number_ratio=1):
@@ -272,8 +312,7 @@ class DataLoader(object):
             particle_size: int, the size of the particle.
             model_input_size: the size of Placeholder to fit the model input, like [100, 64, 64, 1]
             produce_negative: bool, whether to produce the negative particles.
-            negative_distance_ratio: float, a value between 0~1. It stands for the minimum distance between a positive sample 
-                                     and negative sample compared to the particle_size. 
+    			
         Returns:
             return particle_array_positive,particle_array_negative
             particle_array_positive: numpy.array, a 4-dim array,the shape is (number_particles, particle_size, particle_size, 1).
