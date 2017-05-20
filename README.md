@@ -268,5 +268,5 @@ run the script `analysis_pick_results.py`:
 
 When finished, a result file `../autopick-trpv1-by-demo-molecule-A-B/results.txt` will be produced. It records the precision and recall values as well as the deviations of the centers from the reference particles.
 
-If you have any questions, please contact us at "*nejzyj@gmail.com*".
+If you have any questions, please contact us at "*251138964@qq.com*".
 
